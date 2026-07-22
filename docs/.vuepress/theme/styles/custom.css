@@ -1,0 +1,314 @@
+/* 代码块行号字体 */
+.vp-doc div[class*='language-'].line-numbers-mode .line-numbers,
+.vp-doc div[class*='language-'].line-numbers-mode .line-numbers .line-number {
+    -webkit-font-smoothing: unset !important;
+    font-family: JetBrains Mono !important;
+}
+
+/* Mac 风格代码块 */
+.vp-doc div[class*='language-'] {
+    --mac-dot-size: 12px;
+    --mac-dot-gap: 8px;
+    --mac-dot-top: 14px;
+    --mac-dot-left: 16px;
+    --mac-header-height: 40px;
+    /* 用背景绘制三点，避免占用 ::before（留给语言标签） */
+    background-image:
+        radial-gradient(
+            circle at calc(var(--mac-dot-left) + var(--mac-dot-size) / 2)
+                calc(var(--mac-dot-top) + var(--mac-dot-size) / 2),
+            #ff5f56 calc(var(--mac-dot-size) / 2),
+            transparent calc(var(--mac-dot-size) / 2 + 0.5px)
+        ),
+        radial-gradient(
+            circle at calc(var(--mac-dot-left) + var(--mac-dot-size) * 1.5 + var(--mac-dot-gap))
+                calc(var(--mac-dot-top) + var(--mac-dot-size) / 2),
+            #ffbd2e calc(var(--mac-dot-size) / 2),
+            transparent calc(var(--mac-dot-size) / 2 + 0.5px)
+        ),
+        radial-gradient(
+            circle at calc(var(--mac-dot-left) + var(--mac-dot-size) * 2.5 + var(--mac-dot-gap) * 2)
+                calc(var(--mac-dot-top) + var(--mac-dot-size) / 2),
+            #27c93f calc(var(--mac-dot-size) / 2),
+            transparent calc(var(--mac-dot-size) / 2 + 0.5px)
+        );
+    background-repeat: no-repeat;
+}
+
+/* 语言标签 */
+.vp-doc div[class*='language-']::before {
+    font-family: JetBrains Mono !important;
+    content: attr(data-ext) !important;
+    position: absolute;
+    top: var(--mac-dot-top);
+    left: calc(var(--mac-dot-left) + var(--mac-dot-size) * 3 + var(--mac-dot-gap) * 2 + 12px);
+    right: auto;
+    z-index: 5;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    font-size: 0.75rem;
+    line-height: var(--mac-dot-size);
+    color: var(--vp-code-lang-color);
+    pointer-events: none;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    transition:
+        color var(--vp-t-color),
+        opacity 0.2s ease;
+}
+
+/* 恢复主题对 line-numbers ::after 的隐藏，避免布局错乱 */
+.vp-doc div[class*='language-']::after,
+.vp-doc div[class*='language-'].line-numbers-mode::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* 悬停显示复制按钮时：隐藏语言标签，三点用背景绘制不受影响 */
+body:not(.no-copy-code) .vp-doc div[class*='language-']:hover::before {
+    opacity: 0;
+}
+
+.vp-doc div[class*='language-'] > pre {
+    padding-top: var(--mac-header-height);
+}
+
+/* 行号区：避开顶部 Mac 三点，分隔线从标题栏下方开始 */
+.vp-doc div[class*='language-'].line-numbers-mode .line-numbers {
+    z-index: 2;
+    padding-top: var(--mac-header-height);
+    border-right: none;
+}
+
+.vp-doc div[class*='language-'].line-numbers-mode .line-numbers::after {
+    content: '';
+    position: absolute;
+    top: var(--mac-header-height);
+    right: 0;
+    bottom: 20px;
+    width: 1px;
+    pointer-events: none;
+    background-color: var(--vp-code-block-divider-color);
+    transition: background-color var(--vp-t-color);
+}
+
+.vp-doc div[class*='language-'].line-numbers-mode {
+    --mac-dot-left: 12px;
+}
+
+.vp-doc div[class*='language-'].line-numbers-mode .vp-custom-scrollbar.is-horizontal {
+    left: 32px;
+}
+
+/* 带标题的代码块：三点放在标题栏，隐藏语言块上的标签 */
+.vp-doc .code-block-title .code-block-title-bar {
+    padding-left: 68px;
+    background-image:
+        radial-gradient(circle at 22px 50%, #ff5f56 6px, transparent 6.5px),
+        radial-gradient(circle at 42px 50%, #ffbd2e 6px, transparent 6.5px),
+        radial-gradient(circle at 62px 50%, #27c93f 6px, transparent 6.5px);
+    background-repeat: no-repeat;
+}
+
+.vp-doc .code-block-title .code-block-title-bar::after {
+    display: none;
+}
+
+.vp-doc .code-block-title div[class*='language-'] {
+    background-image: none;
+}
+
+.vp-doc .code-block-title div[class*='language-']::before {
+    display: none !important;
+}
+
+.vp-doc .code-block-title div[class*='language-'] > pre {
+    padding-top: 20px;
+}
+
+.vp-doc .code-block-title div[class*='language-'].line-numbers-mode .line-numbers {
+    padding-top: 20px;
+}
+
+.vp-doc .code-block-title div[class*='language-'].line-numbers-mode .line-numbers::after {
+    top: 20px;
+}
+
+/** 自定义滚动条：隐藏原生 + 细条 */
+html.has-custom-scrollbar,
+.has-custom-scrollbar > pre,
+.has-custom-scrollbar.vp-sidebar,
+.has-custom-scrollbar.aside-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html.has-custom-scrollbar::-webkit-scrollbar,
+.has-custom-scrollbar > pre::-webkit-scrollbar,
+.has-custom-scrollbar.vp-sidebar::-webkit-scrollbar,
+.has-custom-scrollbar.aside-container::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+/* 代码块：横向 */
+.vp-doc div[class*='language-'],
+.vp-doc .hint-container div[class*='language-'],
+.vp-doc .vp-code-tab div[class*='language-'] {
+    position: relative;
+    overflow: hidden !important;
+}
+
+.vp-doc div[class*='language-'].has-custom-scrollbar {
+    padding-bottom: 8px;
+}
+
+.vp-doc div[class*='language-'].has-custom-scrollbar > pre,
+.vp-doc div[class*='language-'].has-custom-scrollbar > pre.shiki.vp-code {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.vp-custom-scrollbar.is-horizontal {
+    position: absolute;
+    z-index: 4;
+    right: 8px;
+    bottom: 4px;
+    left: 8px;
+    height: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* 侧边栏：纵向 */
+aside.vp-sidebar.has-custom-scrollbar {
+    position: fixed;
+}
+
+aside.vp-sidebar.has-custom-scrollbar .vp-custom-scrollbar.is-vertical {
+    position: absolute;
+    z-index: 5;
+    top: calc(var(--vp-nav-height, 64px) + 8px);
+    right: 4px;
+    bottom: 96px;
+    width: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+@media (max-width: 959px) {
+    aside.vp-sidebar.has-custom-scrollbar .vp-custom-scrollbar.is-vertical:not(.is-global) {
+        top: 8px;
+        bottom: 96px;
+    }
+}
+
+/* 全局页面滚动条 */
+html.has-custom-scrollbar .vp-custom-scrollbar.is-global {
+    position: fixed;
+    z-index: calc(var(--vp-z-index-nav) + 1);
+    top: calc(var(--vp-nav-height, 64px) + 8px);
+    right: 4px;
+    bottom: 8px;
+    width: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* 右侧大纲 */
+.aside-container.has-custom-scrollbar {
+    position: fixed;
+}
+
+.aside-container.has-custom-scrollbar .vp-custom-scrollbar.is-vertical:not(.is-global) {
+    position: absolute;
+    z-index: 5;
+    top: calc(
+        var(--vp-nav-height, 64px) + var(--vp-layout-top-height, 0px) +
+            var(--vp-doc-top-height, 0px) + 52px
+    );
+    right: 4px;
+    bottom: calc(var(--vp-footer-height, 0px) + 8px);
+    width: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.has-custom-scrollbar:hover .vp-custom-scrollbar,
+html.has-custom-scrollbar:hover .vp-custom-scrollbar.is-global,
+.has-custom-scrollbar.is-scrollbar-active .vp-custom-scrollbar,
+html.has-custom-scrollbar.is-scrollbar-active .vp-custom-scrollbar.is-global {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.vp-custom-scrollbar[hidden] {
+    display: none;
+}
+
+.vp-custom-scrollbar-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: auto;
+    cursor: grab;
+    background-color: var(--vp-code-scrollbar-thumb);
+    border-radius: 3px;
+    transition: background-color 0.15s ease;
+}
+
+.is-horizontal .vp-custom-scrollbar-thumb {
+    height: 100%;
+}
+
+.is-vertical .vp-custom-scrollbar-thumb {
+    width: 100%;
+}
+
+.vp-custom-scrollbar-thumb:hover {
+    background-color: var(--vp-code-scrollbar-thumb-hover);
+}
+
+body.vp-custom-scrollbar-dragging {
+    cursor: grabbing;
+    user-select: none;
+}
+
+body.vp-custom-scrollbar-dragging .vp-custom-scrollbar-thumb {
+    cursor: grabbing;
+    background-color: var(--vp-code-scrollbar-thumb-hover);
+}
+
+@media print {
+    .vp-custom-scrollbar {
+        display: none !important;
+    }
+}
+
+body,
+html {
+    -webkit-font-smoothing: unset !important;
+    font-family:
+        -apple-system,
+        system-ui,
+        Segoe UI,
+        Roboto,
+        Ubuntu,
+        Cantarell,
+        Noto Sans,
+        sans-serif,
+        BlinkMacSystemFont,
+        Helvetica Neue,
+        PingFang SC,
+        Hiragino Sans GB,
+        Microsoft YaHei,
+        Arial !important;
+}

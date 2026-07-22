@@ -1,0 +1,120 @@
+:root {
+    /** 主题颜色 — 主色 #f1404b */
+
+    --vp-c-brand-1: #f1404b;
+
+    --vp-c-brand-2: #f55a63;
+
+    --vp-c-brand-3: #f88a91;
+
+    --vp-c-brand-soft: rgba(241, 64, 75, 0.14);
+
+    /** 代码字体 */
+    --vp-font-family-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+    /** 背景颜色 */
+
+    --vp-c-bg: #ffffff;
+
+    --vp-c-bg-alt: #f8f7f7;
+
+    --vp-c-bg-elv: #ffffff;
+
+    --vp-c-bg-soft: #f8f7f7;
+
+    /** 文本颜色 */
+
+    --vp-c-text-1: rgba(42, 36, 36);
+
+    --vp-c-text-2: rgba(42, 36, 36, 0.76);
+
+    --vp-c-text-3: rgba(42, 36, 36, 0.54);
+
+    /** 代码块白天：Atom One Light */
+
+    --vp-code-block-bg: #fafafa;
+
+    --vp-code-block-color: #383a42;
+
+    --vp-code-lang-color: rgba(56, 58, 66, 0.55);
+
+    --vp-code-line-highlight-color: rgba(56, 58, 66, 0.06);
+
+    --vp-code-line-number-color: rgba(56, 58, 66, 0.4);
+
+    --vp-code-scrollbar-thumb: rgba(56, 58, 66, 0.22);
+
+    --vp-code-scrollbar-thumb-hover: rgba(56, 58, 66, 0.4);
+
+    /** 复制按钮 */
+
+    --copy-code-c-text: #6a737d;
+
+    --copy-code-c-hover: #e5e5e6;
+}
+
+[data-theme='dark'] {
+    --vp-c-brand-1: #f88a91;
+
+    --vp-c-brand-2: #f55a63;
+
+    --vp-c-brand-3: #f1404b;
+
+    --vp-c-brand-soft: rgba(241, 64, 75, 0.18);
+
+    --vp-c-bg: #1b1b1f;
+
+    --vp-c-bg-alt: #161618;
+
+    --vp-c-bg-elv: #202127;
+
+    --vp-c-bg-soft: #202127;
+
+    --vp-c-text-1: rgba(255, 245, 245, 0.86);
+
+    --vp-c-text-2: rgba(235, 225, 225, 0.6);
+
+    --vp-c-text-3: rgba(235, 225, 225, 0.38);
+
+    /** 代码块夜间：One Dark Pro */
+
+    --vp-code-block-bg: #282c34;
+
+    --vp-code-block-color: #abb2bf;
+
+    --vp-code-lang-color: rgba(171, 178, 191, 0.72);
+
+    --vp-code-line-highlight-color: rgba(255, 255, 255, 0.06);
+
+    --vp-code-line-number-color: rgba(171, 178, 191, 0.45);
+
+    --vp-code-scrollbar-thumb: rgba(171, 178, 191, 0.28);
+
+    --vp-code-scrollbar-thumb-hover: rgba(171, 178, 191, 0.45);
+
+    --copy-code-c-text: #abb2bf;
+
+    --copy-code-c-hover: #3e4451;
+}
+
+.vp-copy-code-button {
+    --copy-code-c-text: #6a737d;
+
+    --copy-code-c-hover: #e5e5e6;
+}
+
+.vp-copy-code-button:hover,
+.vp-copy-code-button.copied {
+    --copy-code-c-hover: #d7d8da;
+}
+
+[data-theme='dark'] .vp-copy-code-button {
+    --copy-code-c-text: #abb2bf;
+
+    --copy-code-c-hover: #3e4451;
+}
+
+[data-theme='dark'] .vp-copy-code-button:hover,
+[data-theme='dark'] .vp-copy-code-button.copied {
+    --copy-code-c-hover: #4b5263;
+}

@@ -1,0 +1,4 @@
+allowBuilds:
+  esbuild: false
+shamefullyHoist: true
+shellEmulator: true
