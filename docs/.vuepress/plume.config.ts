@@ -21,9 +21,16 @@ export default defineThemeConfig({
   logo: 'https://theme-plume.vuejs.press/plume.png',
 
   appearance: true,  // 配置 深色模式
-
+  // 社交链接
   social: [
-    { icon: 'github', link: '/' },
+    { icon: 'github', link: 'https://github.com/your-username' },
+    { icon: 'twitter', link: 'https://twitter.com/your-username' },
+    { icon: 'linkedin', link: 'https://www.linkedin.com/in/your-username' },
+    { icon: 'instagram', link: 'https://www.instagram.com/your-username' },
+    { icon: 'facebook', link: 'https://www.facebook.com/your-username' },
+    { icon: 'youtube', link: 'https://www.youtube.com/your-username' },
+    { icon: 'telegram', link: 'https://t.me/your-username' },
+    { icon: 'discord', link: 'https://discord.gg/your-username' },
   ],
   // navbarSocialInclude: ['github'], // 允许显示在导航栏的 social 社交链接
   // aside: true, // 页内侧边栏， 默认显示在右侧

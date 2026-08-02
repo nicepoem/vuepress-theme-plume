@@ -41,7 +41,7 @@ export default defineNavbarConfig([
     ]
   },
 
-  { text: '博客', link: '/blog/' },
+  { text: '计算机网络', link: '/计算机网络/' },
   { text: '标签', link: '/blog/tags/' },
   { text: '归档', link: '/blog/archives/' },
   // {
