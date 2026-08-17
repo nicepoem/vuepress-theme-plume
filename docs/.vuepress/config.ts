@@ -16,8 +16,8 @@ import { plumeTheme } from 'vuepress-theme-plume'
 export default defineUserConfig({
   base: '/',
   lang: 'zh-CN',
-  title: 'My Vuepress Site',
-  description: '笔记',
+  title: '温同学的博客',
+  description: '所有的伟大都源于一个简单的开始',
 
   head: [
     // 配置站点图标
@@ -29,6 +29,7 @@ export default defineUserConfig({
   ],
 
   bundler: viteBundler(),
+
   shouldPrefetch: false, // 站点较大，页面数量较多时，不建议启用
 
   theme: plumeTheme({
@@ -63,7 +64,9 @@ export default defineUserConfig({
     },
 
     /* 本地搜索, 默认启用 */
-    search: { provider: 'local' },
+    search: {
+      provider: 'local'
+    },
 
     /**
      * Algolia DocSearch
@@ -86,12 +89,13 @@ export default defineUserConfig({
         light: 'one-light',
         dark: 'one-dark-pro',
       },
+      // 是否显示行号
       lineNumbers: true,
       // 语言标签由 CSS 显示（data-ext），非此配置项控制
     },
 
     /* 文章字数统计、阅读时间，设置为 false 则禁用 */
-    // readingTime: true,
+    readingTime: true,
 
     /**
      * markdown
@@ -107,7 +111,9 @@ export default defineUserConfig({
       youtube: true,      // 启用嵌入 youtube视频 语法 @[youtube](video_id)
       artPlayer: true,    // 启用嵌入 artPlayer 本地视频 语法 @[artPlayer](url)
       audioReader: true,  // 启用嵌入音频朗读功能 语法 @[audioReader](url)
-      icon: { provider: 'iconify' },        // 启用内置图标语法  ::icon-name::
+      icon: {
+        provider: 'iconify' // 启用内置图标语法  ::icon-name::
+      },
       table: true,        // 启用表格增强容器语法 ::: table
       codepen: true,      // 启用嵌入 codepen 语法 @[codepen](user/slash)
       replit: true,       // 启用嵌入 replit 语法 @[replit](user/repl-name)
@@ -149,17 +155,17 @@ export default defineUserConfig({
      * 评论 comments
      * @see https://theme-plume.vuejs.press/guide/features/comments/
      */
-    // comment: {
-    //   provider: '', // "Artalk" | "Giscus" | "Twikoo" | "Waline"
-    //   comment: true,
-    //   repo: '',
-    //   repoId: '',
-    //   category: '',
-    //   categoryId: '',
-    //   mapping: 'pathname',
-    //   reactionsEnabled: true,
-    //   inputPosition: 'top',
-    // },
+    comment: {
+      provider: 'Giscus', // "Artalk" | "Giscus" | "Twikoo" | "Waline"
+      comment: true,
+      repo: 'nicepoem/Giscus',
+      repoId: 'R_kgDOTy-YeA',
+      category: 'Announcements',
+      categoryId: 'DIC_kwDOTy-YeM4DC_A-',
+      mapping: 'pathname',
+      reactionsEnabled: true,
+      inputPosition: 'top',
+    },
 
     /**
      * 资源链接替换

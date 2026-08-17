@@ -7,26 +7,25 @@ permalink: /linux/wdr458fw/
 
 ## 安装
 
-1、更新软件包列表，升级已安装的软件包。
+1. 更新软件包列表，升级已安装的软件包。
 
 ```bash
-sudo apt update
-sudo apt upgrade
+sudo apt update && sudo apt upgrade -y
 ```
 
-2、安装 Nginx
+2. 安装 Nginx
 
 ```bash
 sudo apt install -y nginx
 ```
 
-3、查看 Nginx 版本
+3. 查看 Nginx 版本
 
 ```bash
 nginx -v
 ```
 
-4、查看 Nginx 状态
+4. 查看 Nginx 状态
 
 ```bash
 sudo systemctl status nginx
@@ -112,29 +111,31 @@ LISTEN      0           128                      [::1]:6010                   [:
 
 Nginx 目录结构树状图
 
-```bash{2,5,6,8}
-/etc/nginx/
-├── nginx.conf                    # 主配置文件 - Nginx 核心配置入口
-├── mime.types                    # MIME 类型映射 - 定义文件扩展名与 Content-Type 对应关系
-│
-├── sites-available/              # 站点可用配置目录 - 存放所有网站的虚拟主机配置（未激活）
-├── sites-enabled/                # 站点已启用目录 - 存放指向 sites-available/ 的软链接（激活的站点）
-│
-├── conf.d/                       # 额外配置目录 - 存放独立的配置文件（自动加载 *.conf）
-├── snippets/                     # 配置片段目录 - 存放可复用的配置片段
-│
-├── modules-available/            # 模块可用目录 - 存放可加载的动态模块配置（.conf 文件）
-├── modules-enabled/              # 模块已启用目录 - 存放指向 modules-available/ 的软链接（激活的模块）
-│
-├── fastcgi.conf                  # FastCGI 完整配置 - 包含所有 FastCGI 参数（用于 PHP-FPM 等）
-├── fastcgi_params                # FastCGI 基础参数 - 被 fastcgi.conf 引用，定义基础参数
-├── scgi_params                   # SCGI 参数配置 - 用于 SCGI 协议（较少使用）
-├── uwsgi_params                  # uWSGI 参数配置 - 用于 Python uWSGI 应用（如 Django）
-├── proxy_params                  # 反向代理参数 - 包含标准代理头设置（X-Real-IP, X-Forwarded-For 等）
-│
-├── koi-utf                       # KOI8-R 到 UTF-8 编码转换表（俄语相关）
-├── koi-win                       # KOI8-R 到 Windows-1251 编码转换表（俄语相关）
-└── win-utf                       # Windows-1251 到 UTF-8 编码转换表（俄语相关）
+```bash
+/etc/nginx
+├── conf.d                     # 目录：存放额外独立配置文件，*.conf会自动加载
+├── fastcgi.conf               # 文件：PHP‑FPM环境变量参数，解析php首选文件
+├── fastcgi_params             # 文件：旧版fastcgi参数，兼容老项目，一般不用
+├── koi-utf                    # 文件：俄文编码映射，无需修改
+├── koi-win                    # 文件：俄文编码映射，无需修改
+├── mime.types                 # 文件：后缀‑MIME对照表，告诉nginx文件类型
+├── modules-available          # 目录：存放所有可用动态模块配置
+├── modules-enabled            # 目录：启用的模块，软链接指向available
+├── nginx.conf                 # 文件：【主配置文件】全局入口，加载其他所有配置
+├── proxy_params               # 文件：反向代理公共头参数，转发真实客户端IP
+├── scgi_params                # 文件：scgi协议参数，几乎不用
+├── sites-available            # 目录：站点配置仓库，写在这里不会自动生效
+│   ├── default                # 默认站点配置
+│   ├── web2                   # 自定义站点web2配置
+│   └── wordpress              # wordpress网站配置
+├── sites-enabled              # 目录：生效站点目录，放软链接开启网站
+│   ├── web2 -> /etc/nginx/sites-available/web2
+│   └── wordpress -> /etc/nginx/sites-available/wordpress
+├── snippets                   # 目录：可复用的小段配置，用include引入
+│   ├── fastcgi-php.conf       # php解析片段，新建php网站直接include即可
+│   └── snakeoil.conf          # 测试ssl证书片段，https测试用
+├── uwsgi_params               # 文件：uwsgi代理参数，用于python项目
+└── win-utf                    # 文件：编码映射，无需修改
 ```
 
 - nginx.conf

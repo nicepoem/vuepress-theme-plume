@@ -3,39 +3,13 @@ title: Mysql
 createTime: 2026/07/10 15:49:47
 permalink: /linux/viwmsl2i/
 ---
-## 准备工作
-
 ### 更新系统软件包
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-- -y 参数表示自动确认更新，避免中途交互等待，适合批量部署场景。
-
-### 防火墙放行
-
-```bash
-# 放行端口
-sudo ufw allow 3306/tcp
-# 查看防火墙规则
-sudo ufw status
-```
-
-### 检查系统环境
-
-确认系统架构与 Ubuntu 版本，确保与 MySQL 安装包兼容，执行命令：
-
-```bash
-# 查看系统版本
-lsb_release -a
-# 查看系统架构
-uname -m
-```
-
-Ubuntu 20.04/22.04/26.04 推荐安装 MySQL 8.0 版本，兼容性最优，后续操作均以 MySQL 8.0 为例。
-
-## MySQL 安装
+- `-y` 参数表示自动确认更新，避免中途交互等待，适合批量部署场景。
 
 ### 安装 MySQL
 
@@ -43,35 +17,35 @@ Ubuntu 20.04/22.04/26.04 推荐安装 MySQL 8.0 版本，兼容性最优，后�
 sudo apt install -y mysql-server
 ```
 
-安装过程中会弹出设置 root 密码的窗口，务必设置强密码（包含大小写字母、数字、特殊符号），并牢记密码，后续登录与配置需使用。
+安装过程中会弹出设置 root 密码的窗口，务必设置强密码，并牢记密码，后续登录与配置需使用。
 
-### 安装验证
+安装完成后我们可以查看 mysql 版本验证是否安装成功。
 
 ```bash
 # 查看版本
 mysql --version
-查看服务状态
+# 查看服务状态
 sudo systemctl status mysql
 ```
 
-服务状态显示 `active (running)`，说明成功启动。
+查看服务状态若显示 `active (running)`，说明成功启动。
 
 ```mysql{3}
-mysql.service - MySQL Community Server
+● mysql.service - MySQL Community Server
      Loaded: loaded (/usr/lib/systemd/system/mysql.service; enabled; preset: enabled)
-     Active: active (running) since Fri 2026-07-10 23:06:38 CST; 10min ago
- Invocation: 32f28849100e4aa8a7717e61787f61ab
-    Process: 346590 ExecStartPre=/usr/share/mysql/mysql-systemd-start pre (code=exited, >
-   Main PID: 346600 (mysqld)
+     Active: active (running) since Mon 2026-08-10 17:53:51 CST; 1min 48s ago
+ Invocation: a7f6e47b40744479828f4152600647d6
+    Process: 56896 ExecStartPre=/usr/share/mysql/mysql-systemd-start pre (code=exited, s>
+   Main PID: 56906 (mysqld)
      Status: "Server is operational"
-      Tasks: 35 (limit: 6080)
-     Memory: 479.1M (peak: 479.4M)
-        CPU: 3.599s
+      Tasks: 34 (limit: 1558)
+     Memory: 480.7M (peak: 481.1M)
+        CPU: 1.090s
      CGroup: /system.slice/mysql.service
-             └─346600 /usr/sbin/mysqld
+             └─56906 /usr/sbin/mysqld
 ```
 
-## MySQL 初始化配置
+## 初始化配置
 
 MySQL 安装后存在默认安全隐患，需执行官方安全脚本优化配置，执行命令：
 
@@ -81,24 +55,86 @@ sudo mysql_secure_installation
 
 执行后会依次出现以下交互选项，按以下建议配置：
 
-- Enter password for user root：输入安装时设置的 root 密码，回车确认。
-- VALIDATE PASSWORD COMPONENT：是否开启密码强度验证，建议选 Y（开启），提升安全性。
-- Password validation policy level：选择密码强度等级，推荐选 2（STRONG，强等级），要求密码长度≥8，包含大小写、数字、特殊符号。
-- Change the password for root：是否修改 root 密码，若安装时已设置强密码，可选 N；若需修改，选 Y 并重新设置。
-- Remove anonymous users：是否删除匿名用户，建议选 Y，避免未授权访问。
-- Disallow root login remotely：是否禁止 root 用户远程登录，建议选 Y（后续可创建专用远程用户，更安全）。
-- Remove test database and access to it：是否删除测试数据库，建议选 Y，清理无用数据。
-- Reload privilege tables now：是否立即重新加载权限表，选 Y，使配置生效。
+```bash{10,18,31,39,58}
+Securing the MySQL server deployment.
 
-## 登录 MySQL 验证
+Connecting to MySQL using a blank password.
 
-初始化完成后，登录 MySQL 验证配置，Ubuntu 通过 apt 安装的 MySQL，默认对 root 用户启用了 `auth_socket` 认证。只需要用系统 `sudo` 权限登录即可，输入密码时直接回车。
+VALIDATE PASSWORD COMPONENT can be used to test passwords
+and improve security. It checks the strength of password
+and allows the users to set only those passwords which are
+secure enough. Would you like to setup VALIDATE PASSWORD component?
+
+Press y|Y for Yes, any other key for No: y
+
+There are three levels of password validation policy:
+
+LOW    Length >= 8
+MEDIUM Length >= 8, numeric, mixed case, and special characters
+STRONG Length >= 8, numeric, mixed case, special characters and dictionary                  file
+
+Please enter 0 = LOW, 1 = MEDIUM and 2 = STRONG: 1
+
+Skipping password set for root as authentication with auth_socket is used by default.
+If you would like to use password authentication instead, this can be done with the "ALTER_USER" command.
+See https://dev.mysql.com/doc/refman/8.0/en/alter-user.html#alter-user-password-management for more information.
+
+By default, a MySQL installation has an anonymous user,
+allowing anyone to log into MySQL without having to have
+a user account created for them. This is intended only for
+testing, and to make the installation go a bit smoother.
+You should remove them before moving into a production
+environment.
+
+Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
+Success.
+
+
+Normally, root should only be allowed to connect from
+'localhost'. This ensures that someone cannot guess at
+the root password from the network.
+
+Disallow root login remotely? (Press y|Y for Yes, any other key for No) : y
+Success.
+
+By default, MySQL comes with a database named 'test' that
+anyone can access. This is also intended only for testing,
+and should be removed before moving into a production
+environment.
+
+
+Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+ - Dropping test database...
+Success.
+
+ - Removing privileges on test database...
+Success.
+
+Reloading the privilege tables will ensure that all changes
+made so far will take effect immediately.
+
+Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+Success.
+
+All done! 
+```
+
+- `Press y|Y for Yes, any other key for No`：启用后，MySQL 会强制检查你设置的 root 密码是否符合一定的强度规则（如长度、字符组合等），避免使用弱密码。选择1(MEDIUM)
+- `Remove anonymous users`：是否删除匿名用户，建议选 Y，避免未授权访问。
+- `Disallow root login remotely`：是否禁止 root 用户远程登录，建议选 Y。
+- `Remove test database and access to it`：是否删除测试数据库，建议选 Y，清理无用数据。
+- `Reload privilege tables now`：是否立即重新加载权限表，选 Y，使配置生效。
+- `Enter password for user root`：输入安装时设置的 root 密码，回车确认。
+
+## 登录 MySQL
+
+初始化完成后，登录 MySQL 验证配置，Ubuntu 通过 apt 安装的 MySQL，默认对 root 用户启用了 `auth_socket` 认证。只需要用系统 `sudo` 权限登录即可，输入任意密码后直接回车。
 
 ```bash
 sudo mysql -u root -p
 ```
 
-进入 MySQL 命令行（显示 ``mysql>` ），说明登录成功。可执行 `show databases;` 查看默认数据库，验证服务正常。
+进入 MySQL 命令行（显示 `mysql>` ），说明登录成功。执行 `show databases;` 可以查看默认数据库，验证服务正常。
 
 ```mysql
 mysql> show databases;
@@ -110,12 +146,10 @@ mysql> show databases;
 | performance_schema |
 | sys                |
 +--------------------+
-4 rows in set (0.00 sec)
+4 rows in set (0.01 sec)
 ```
 
-## 基础配置
-
-### 配置文件修改
+## 配置文件
 
 MySQL 主配置文件为 `/etc/mysql/mysql.conf.d/mysqld.cnf`，运维中常用配置项如下，修改前建议先备份配置文件：
 
@@ -129,7 +163,7 @@ sudo cp /etc/mysql/mysql.conf.d/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf.ba
 sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
 ```
 
-### 常用配置项说明
+常用配置项说明
 
 - bind-address：监听地址，默认 127.0.0.1（仅本地访问），若需远程访问，修改为 0.0.0.0（允许所有地址访问），或指定固定 IP。
 - port：监听端口，默认 3306，若需修改，直接修改数值（如 3307），修改后需重启服务。
@@ -155,48 +189,49 @@ collation-server = utf8mb4_unicode_ci
 read-only = 0
 ```
 
-修改完成后，保存退出 vim（按 Esc，输入 :wq 回车），重启 MySQL 服务使配置生效：
+修改完成后，保存退出 vim（按 Esc，输入 `:wq` 回车），重启 MySQL 服务使配置生效：
 
 ```bash
 sudo systemctl restart mysql
 ```
 
-### 字符集配置验证
-
-登录 MySQL，执行以下命令验证字符集配置：
-
-```sql
-show variables like '%character%';
-show variables like '%collation%';
-```
-
-若结果中 character_set_server、collation_server 均为 utf8mb4 相关配置，说明配置生效。
-
 ## 用户与权限管理
 
 MySQL 中 root 用户权限过高，运维中建议创建专用用户，分配对应权限，避免使用 root 用户直接操作业务数据库。
 
-### 创建新用户
+### 本地完整库权限
 
-登录 MySQL 后，执行以下命令创建新用户（示例：创建用户 tom，允许远程访问，密码为 123456）：
-
-```sql
-CREATE USER 'tom'@'%' IDENTIFIED BY '123456';
+```mysql
+-- 创建本地账号
+CREATE USER 'tom'@'localhost' IDENTIFIED BY 'Aa@620521';
+-- 仅 wp_db 所有表完整权限
+GRANT ALL PRIVILEGES ON wp_db.* TO 'wp_user'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-说明：
+### 远程完整管理账号
 
-- 'tom'：用户名，可根据业务自定义。
-- '%'：允许该用户从任意地址远程访问，若仅允许本地访问，改为 'localhost'；若允许指定 IP 访问，改为 '192.168.1.100'（替换为实际 IP）。
-- 密码需符合安全初始化时设置的强度要求，避免弱密码。
+```mysql
+CREATE USER 'tom'@'%' IDENTIFIED BY '强密码';
+GRANT ALL PRIVILEGES ON wp_db.* TO 'tom_db'@'%';
+FLUSH PRIVILEGES;
+```
 
-## 远程连接
+### 只读账号
+
+适合查看日志、数据浏览
+
+```mysql
+CREATE USER 'read_user'@'localhost' IDENTIFIED BY '密码';
+GRANT SELECT ON wp_db.* TO 'read_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+### 远程连接
 
 默认情况下，MySQL 仅允许本地访问，若需远程连接（如通过 Navicat、DBeaver 等工具），需完成以下两步配置。
 
-### 修改 MySQL 配置文件（允许远程监听）
-
-将配置文件中的 bind-address 修改为 0.0.0.0，重启 MySQL 服务。
+修改 MySQL 配置文件（允许远程监听）将配置文件中的 `bind-address` 修改为 `0.0.0.0`，重启 MySQL 服务。
 
 ### 开放系统防火墙端口
 
@@ -212,12 +247,4 @@ sudo ufw status
 ```
 
 若服务器使用云服务器（如阿里云、腾讯云），还需在云平台安全组中开放 3306 端口，否则远程连接会失败。
-
-### 远程连接验证
-
-使用远程工具连接 MySQL，输入服务器 IP、端口、用户名、密码，若能成功连接，说明远程访问配置生效。
-
-```
-ALTER USER 'tom'@'%' IDENTIFIED BY '123456';
-```
 

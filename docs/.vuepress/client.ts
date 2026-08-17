@@ -1,5 +1,7 @@
 import { defineClientConfig, onContentUpdated } from 'vuepress/client'
 import { setupCustomScrollbars } from './theme/customScrollbar'
+import Layout from './layouts/Layout.vue'
+import Bulletin from './theme/components/Bulletin.vue'
 // import RepoCard from 'vuepress-theme-plume/features/RepoCard.vue'
 // import NpmBadge from 'vuepress-theme-plume/features/NpmBadge.vue'
 // import NpmBadgeGroup from 'vuepress-theme-plume/features/NpmBadgeGroup.vue'
@@ -18,6 +20,9 @@ export default defineClientConfig({
       requestAnimationFrame(setupCustomScrollbars)
     })
   },
+  layouts: {
+    Layout,
+  },
   enhance({ app }) {
     // built-in components
     // app.component('RepoCard', RepoCard)
@@ -27,5 +32,6 @@ export default defineClientConfig({
 
     // your custom components
     // app.component('CustomComponent', CustomComponent)
+    app.component('Bulletin', Bulletin)
   },
 })

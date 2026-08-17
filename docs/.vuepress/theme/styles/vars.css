@@ -1,16 +1,18 @@
 :root {
-    /** 主题颜色 — 主色 #f1404b */
+    /** 主题颜色 — 与 VitePress 默认 indigo 主色一致 */
 
-    --vp-c-brand-1: #f1404b;
+    --vp-c-brand-1: #3451b2;
 
-    --vp-c-brand-2: #f55a63;
+    --vp-c-brand-2: #3a5ccc;
 
-    --vp-c-brand-3: #f88a91;
+    --vp-c-brand-3: #5672cd;
 
-    --vp-c-brand-soft: rgba(241, 64, 75, 0.14);
+    --vp-c-brand-soft: rgba(100, 108, 255, 0.14);
 
     /** 代码字体 */
-    --vp-font-family-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --vp-font-family-mono:
+        'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+        monospace;
 
     /** 背景颜色 */
 
@@ -51,16 +53,27 @@
     --copy-code-c-text: #6a737d;
 
     --copy-code-c-hover: #e5e5e6;
+
+    /** 公告板 */
+    --vp-bulletin-width: 300px;
+    --vp-bulletin-bg-color: var(--vp-c-bg);
+    --vp-bulletin-text-color: var(--vp-c-text-2);
+    --vp-bulletin-title-color: var(--vp-c-text-1);
+    --vp-bulletin-font-size: 14px;
+    --vp-bulletin-title-font-size: 15px;
+    --vp-bulletin-line-height: 1.7;
+    --vp-bulletin-border-width: 0px;
+    --vp-bulletin-border: none;
 }
 
 [data-theme='dark'] {
-    --vp-c-brand-1: #f88a91;
+    --vp-c-brand-1: #a8b1ff;
 
-    --vp-c-brand-2: #f55a63;
+    --vp-c-brand-2: #5c73e7;
 
-    --vp-c-brand-3: #f1404b;
+    --vp-c-brand-3: #3e63dd;
 
-    --vp-c-brand-soft: rgba(241, 64, 75, 0.18);
+    --vp-c-brand-soft: rgba(100, 108, 255, 0.16);
 
     --vp-c-bg: #1b1b1f;
 

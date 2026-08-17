@@ -2,7 +2,7 @@
 .vp-doc div[class*='language-'].line-numbers-mode .line-numbers,
 .vp-doc div[class*='language-'].line-numbers-mode .line-numbers .line-number {
     -webkit-font-smoothing: unset !important;
-    font-family: JetBrains Mono !important;
+    font-family: 'UList', var(--vp-font-family-mono), monospace !important;
 }
 
 /* Mac 风格代码块 */
@@ -292,6 +292,225 @@ body.vp-custom-scrollbar-dragging .vp-custom-scrollbar-thumb {
         display: none !important;
     }
 }
+/* h1：华文中宋 */
+/* .vp-doc h2 {
+    font-family: '华文中宋', 'STZhongsong', serif;
+    font-weight: bold;
+    color: var(--vp-c-brand-1);
+} */
+
+/* 文档元信息：无整体背景，各项单独灰色背景 */
+div.vp-doc-meta {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 12px 16px !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 0 0 0.5rem !important;
+    margin: 0 0 1.75rem !important;
+    font-family: 'UList', var(--vp-font-family-mono), monospace !important;
+    font-size: 13px !important;
+    color: var(--vp-c-text-2) !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+/* 隐藏主题默认的字数时长 / 创建时间，由自定义 DocMetaBar 接管 */
+div.vp-doc-meta > .reading-time,
+div.vp-doc-meta > .create-time {
+    display: none !important;
+}
+
+div.vp-doc-meta .doc-meta-bar {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 0;
+    width: 100%;
+}
+
+div.vp-doc-meta .meta-item {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    padding: 5px 10px;
+    line-height: 1.4;
+    color: var(--vp-c-text-2);
+    background: var(--vp-c-bg-soft);
+    border-radius: 6px;
+    box-shadow: none;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    div.vp-doc-meta .doc-meta-bar {
+        gap: 8px;
+    }
+}
+
+div.vp-doc-meta .meta-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: var(--vp-c-brand-1);
+}
+
+div.vp-doc-meta .meta-icon-eye {
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7m0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10m0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7m0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10m0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+}
+
+div.vp-doc-meta .meta-value {
+    color: var(--vp-c-text-2);
+    font-variant-numeric: tabular-nums;
+}
+
+div.vp-doc-meta .tag {
+    border-radius: 6px;
+}
+
+/* 列表：数字与圆点使用主配色；有序列表数字使用自定义字体 */
+@font-face {
+    font-family: 'UList';
+    src: url('/fonts/ulist.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.vp-doc ul > li::marker,
+.vp-doc ol > li::marker {
+    color: var(--vp-c-brand-1);
+}
+
+.vp-doc ol > li::marker {
+    font-family: 'UList', var(--vp-font-family-mono), monospace;
+}
+
+/* 无序列表：与正文对齐，去掉左侧缩进 */
+.vp-doc ul {
+    padding-left: 0;
+    list-style-position: inside;
+}
+
+.vp-doc li > ul {
+    padding-left: 1.25rem;
+}
+
+/* 引言块：去掉引号图标，收紧边距 */
+.vp-doc blockquote {
+    position: relative;
+    margin: 16px 0;
+    padding: 10px 16px;
+    color: var(--vp-c-text-2);
+    background-color: var(--vp-c-bg-soft);
+    border-left: 3px solid var(--vp-c-brand-1);
+    border-radius: 8px;
+    transition:
+        background-color var(--vp-t-color),
+        color var(--vp-t-color),
+        border-color var(--vp-t-color);
+}
+
+.vp-doc blockquote::before {
+    display: none;
+    content: none;
+}
+
+.vp-doc blockquote > p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: inherit;
+}
+
+.vp-doc blockquote > p + p {
+    margin-top: 8px;
+}
+
+/* 页脚 Shields.io 徽章 */
+.footer-badges-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    max-width: var(--vp-layout-max-width);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.footer-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-badge {
+    display: inline-flex;
+    line-height: 0;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+.footer-badge img {
+    height: 20px;
+    border: 0;
+}
+
+a.footer-badge:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.footer-copyright {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--vp-c-text-3);
+}
+
+.footer-copyright a {
+    color: var(--vp-c-text-2);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.footer-copyright a:hover {
+    color: var(--vp-c-brand-1);
+}
+
+@font-face {
+    font-family: 'HK';
+    src: url('/fonts/hk.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* :root {
+    --vp-font-family-base: 'HK', -apple-system, system-ui, sans-serif;
+}
+
+body,
+html {
+    -webkit-font-smoothing: unset !important;
+    font-family: var(--vp-font-family-base) !important;
+} */
 
 body,
 html {

@@ -10,6 +10,7 @@
  * 特别的，请不要在两个配置文件中重复配置相同的项，当前文件的配置项会覆盖 `.vuepress/config.ts` 文件中的配置
  */
 
+import path from 'node:path'
 import { defineThemeConfig } from 'vuepress-theme-plume'
 import navbar from './navbar'
 import collections from './collections'
@@ -40,15 +41,15 @@ export default defineThemeConfig({
    * 文章版权信息
    * @see https://theme-plume.vuejs.press/guide/features/copyright/
    */
-  copyright: true,
+  copyright: false,
 
   prevPage: true,   // 是否启用上一页链接
   nextPage: true,   // 是否启用下一页链接
   createTime: true, // 是否显示文章创建时间
 
-  /* 站点页脚 */
+  /* 站点页脚 — 内容由 footer-badges.ts + FooterBadges 组件渲染（Shields.io 风格） */
   footer: {
-    message: 'Power by <a target="_blank" href="https://v2.vuepress.vuejs.org/">VuePress</a> & <a target="_blank" href="https://theme-plume.vuejs.press">vuepress-theme-plume</a>',
+    message: '',
     copyright: '',
   },
 
@@ -57,9 +58,9 @@ export default defineThemeConfig({
    */
   profile: {
     avatar: 'https://theme-plume.vuejs.press/plume.png',
-    name: 'My Vuepress Site',
+    name: '温同学',
     description: '笔记',
-    // circle: true,
+    circle: true, // 是否显示圆形头像
     // location: '',
     // organization: '',
   },
@@ -71,12 +72,12 @@ export default defineThemeConfig({
    * 公告板
    * @see https://theme-plume.vuejs.press/guide/features/bulletin/
    */
-  // bulletin: {
-  //   layout: 'top-right',
-  //   contentType: 'markdown',
-  //   title: '公告板标题',
-  //   content: '公告板内容',
-  // },
+  bulletin: {
+    layout: 'top-right',
+    contentType: 'markdown',
+    title: '公告板',
+    contentFile: path.join(__dirname, '_bulletin.md'),
+  },
 
   /* 过渡动画 @see https://theme-plume.vuejs.press/config/theme/#transition */
   transition: {
