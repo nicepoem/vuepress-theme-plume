@@ -299,21 +299,21 @@ body.vp-custom-scrollbar-dragging .vp-custom-scrollbar-thumb {
     color: var(--vp-c-brand-1);
 } */
 
-/* 文档元信息：无整体背景，各项单独灰色背景 */
+/* 文档元信息：整体灰色背景 + 小圆角 */
 div.vp-doc-meta {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 12px 16px !important;
+    gap: 0 !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    padding: 0 0 0.5rem !important;
+    padding: 10px 14px !important;
     margin: 0 0 1.75rem !important;
     font-family: 'UList', var(--vp-font-family-mono), monospace !important;
     font-size: 13px !important;
     color: var(--vp-c-text-2) !important;
-    background: transparent !important;
+    background: var(--vp-c-bg-soft) !important;
     border: none !important;
-    border-radius: 0 !important;
+    border-radius: 8px !important;
 }
 
 /* 隐藏主题默认的字数时长 / 创建时间，由自定义 DocMetaBar 接管 */
@@ -326,7 +326,7 @@ div.vp-doc-meta .doc-meta-bar {
     display: flex;
     flex: 1;
     flex-wrap: wrap;
-    gap: 8px 10px;
+    gap: 0;
     align-items: center;
     justify-content: flex-start;
     min-width: 0;
@@ -337,18 +337,42 @@ div.vp-doc-meta .meta-item {
     display: inline-flex;
     gap: 6px;
     align-items: center;
-    padding: 5px 10px;
+    padding: 2px 12px;
     line-height: 1.4;
     color: var(--vp-c-text-2);
-    background: var(--vp-c-bg-soft);
-    border-radius: 6px;
+    background: transparent;
+    border-radius: 0;
     box-shadow: none;
     white-space: nowrap;
 }
 
+div.vp-doc-meta .meta-item:first-child {
+    padding-left: 0;
+}
+
+div.vp-doc-meta .meta-item:last-child {
+    padding-right: 0;
+}
+
+div.vp-doc-meta .meta-item + .meta-item {
+    border-left: 1px solid var(--vp-c-divider);
+}
+
 @media (max-width: 640px) {
+    div.vp-doc-meta {
+        padding: 10px 12px !important;
+    }
+
+    div.vp-doc-meta .meta-item {
+        padding: 2px 10px;
+    }
+
+    div.vp-doc-meta .meta-item + .meta-item {
+        border-left: none;
+    }
+
     div.vp-doc-meta .doc-meta-bar {
-        gap: 8px;
+        gap: 10px 14px;
     }
 }
 

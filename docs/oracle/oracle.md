@@ -14,14 +14,3 @@ https://www.oracle.com/database/technologies/oracle19c-windows-downloads.html
 
 ## 安装
 
-![](https://cdn.jsdelivr.net/gh/nicepoem/static/images/20260812162143873.png)
-
-![](https://cdn.jsdelivr.net/gh/nicepoem/static/images/20260812162550857.png)
-
-![](https://cdn.jsdelivr.net/gh/nicepoem/static/images/20260812162615072.png)
-
-![](https://cdn.jsdelivr.net/gh/nicepoem/static/images/20260812162811291.png)
-
-![](https://cdn.jsdelivr.net/gh/nicepoem/static/images/20260812163230899.png)
-
-![](https://cdn.jsdelivr.net/gh/nicepoem/static/images/20260812163444956.png)

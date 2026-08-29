@@ -5,11 +5,17 @@ permalink: /linux/13si1f9n/
 ---
 # du
 
-Linux 文件目录占用统计命令，精准统计文件、目录磁盘占用大小，定位磁盘爆满源头。
+查看文件夹大小
 
 ## 英文全拼
 
 ```
 du = disk usage
+```
+
+## 语法格式
+
+```bash
+du -sh /opt/tomcat/
 ```
 

@@ -13,3 +13,10 @@ permalink: /linux/f5tpp09k/
 ps = Process Status
 ```
 
+## 语法格式
+
+```bash
+ps -ef | grep tomcat    # 查看tomcat进程
+ps -ef | grep java      # 查看java进程
+```
+

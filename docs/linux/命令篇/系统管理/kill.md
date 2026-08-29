@@ -13,3 +13,9 @@ permalink: /linux/l86vbj81/
 kill = Process Kill
 ```
 
+## 语法格式
+
+```bash
+kill -9 进程ID   # 强制杀死进程（运维常用）
+```
+

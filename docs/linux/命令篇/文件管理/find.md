@@ -5,11 +5,18 @@ permalink: /linux/006crmnl/
 ---
 # find
 
-
+全盘查找文件
 
 ## 英文全拼
 
 ```
 find = find file
+```
+
+## 语法格式
+
+```bash
+find / -name "catalina.out"
+find /opt -name "*.xml"
 ```
 

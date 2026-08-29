@@ -13,3 +13,12 @@ permalink: /linux/s38ahw5o/
 cd = change directory
 ```
 
+## 语法格式
+
+```bash
+cd /opt/tomcat      # 进入tomcat目录
+cd ..               # 返回上一级
+cd ~                # 回到家目录
+cd /                # 进入根目录
+```
+

@@ -26,6 +26,8 @@ export default defineUserConfig({
     ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
     ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
     ['link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' }],
+    // 尽早恢复主题色 / 页面尺寸，避免首屏闪烁
+    ['script', {}, `(()=>{try{const d=document.documentElement;const b=localStorage.getItem('plume-brand-color');const s=localStorage.getItem('plume-page-size');if(b)d.setAttribute('data-brand',b);if(s)d.setAttribute('data-page-size',s)}catch(e){}})()`],
   ],
 
   bundler: viteBundler(),

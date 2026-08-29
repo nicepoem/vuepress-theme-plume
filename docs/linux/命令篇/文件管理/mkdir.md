@@ -13,3 +13,10 @@ permalink: /linux/sk6khmk0/
 mkdir = make directory
 ```
 
+## 语法格式
+
+```bash
+mkdir testdir
+mkdir -p /opt/test/aaa  # 递归创建多层目录（工作常用）
+```
+
