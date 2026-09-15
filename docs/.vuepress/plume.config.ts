@@ -19,7 +19,7 @@ import collections from './collections'
  * @see https://theme-plume.vuejs.press/config/theme/
  */
 export default defineThemeConfig({
-  logo: 'https://theme-plume.vuejs.press/plume.png',
+  logo: 'https://api.iconify.design/token:rtm.svg',
 
   appearance: true,  // 配置 深色模式
   // 社交链接
@@ -41,7 +41,8 @@ export default defineThemeConfig({
    * 文章版权信息
    * @see https://theme-plume.vuejs.press/guide/features/copyright/
    */
-  copyright: false,
+
+  copyright: false, // 是否显示文章版权信息
 
   prevPage: true,   // 是否启用上一页链接
   nextPage: true,   // 是否启用下一页链接
@@ -57,7 +58,7 @@ export default defineThemeConfig({
    * @see https://theme-plume.vuejs.press/config/theme/#profile
    */
   profile: {
-    avatar: 'https://theme-plume.vuejs.press/plume.png',
+    avatar: 'https://api.iconify.design/token:rtm.svg',
     name: '温同学',
     description: '笔记',
     circle: true, // 是否显示圆形头像
@@ -73,13 +74,15 @@ export default defineThemeConfig({
    * @see https://theme-plume.vuejs.press/guide/features/bulletin/
    */
   bulletin: {
-    layout: 'top-right',
+    layout: 'top-left',
     contentType: 'markdown',
     title: '公告板',
     contentFile: path.join(__dirname, '_bulletin.md'),
   },
 
-  /* 过渡动画 @see https://theme-plume.vuejs.press/config/theme/#transition */
+  /** 过渡动画 
+  * @see https://theme-plume.vuejs.press/config/theme/#transition 
+  */
   transition: {
     page: true,        // 启用 页面间跳转过渡动画
     postList: true,    // 启用 博客文章列表过渡动画

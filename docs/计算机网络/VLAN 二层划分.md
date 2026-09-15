@@ -2,6 +2,10 @@
 title:  VLAN二层划分
 createTime: 2026/07/23 22:42:05
 permalink: /计算机网络/mjoouvkk/
+watermark:
+  content: wenzhaohui.com
+  globalAlpha: 0.2
+  rotate: 45
 ---
 ## 实验目的
 

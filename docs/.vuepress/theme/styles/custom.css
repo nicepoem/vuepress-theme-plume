@@ -137,7 +137,7 @@ body:not(.no-copy-code) .vp-doc div[class*='language-']:hover::before {
     top: 20px;
 }
 
-/** 自定义滚动条：隐藏原生 + 细条 */
+/* 自定义滚动条：隐藏原生 + 细条 */
 html.has-custom-scrollbar,
 .has-custom-scrollbar > pre,
 .has-custom-scrollbar.vp-sidebar,
@@ -293,11 +293,11 @@ body.vp-custom-scrollbar-dragging .vp-custom-scrollbar-thumb {
     }
 }
 /* h1：华文中宋 */
-/* .vp-doc h2 {
+.page-title {
     font-family: '华文中宋', 'STZhongsong', serif;
     font-weight: bold;
     color: var(--vp-c-brand-1);
-} */
+}
 
 /* 文档元信息：整体灰色背景 + 小圆角 */
 div.vp-doc-meta {
