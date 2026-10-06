@@ -59,18 +59,18 @@ export default defineThemeConfig({
   },
 
   navbar,
-  collections,
+  collections, // 文章分类
 
   /**
    * 公告板
    * @see https://theme-plume.vuejs.press/guide/features/bulletin/
    */
-  bulletin: {
-    layout: 'top-left',
-    contentType: 'markdown',
-    title: '公告板',
-    contentFile: path.join(__dirname, '_bulletin.md'),
-  },
+  // bulletin: {
+  //   layout: 'top-left',
+  //   contentType: 'markdown',
+  //   title: '公告板',
+  //   contentFile: path.join(__dirname, '_bulletin.md'),
+  // },
 
   /** 过渡动画 
   * @see https://theme-plume.vuejs.press/config/theme/#transition 
