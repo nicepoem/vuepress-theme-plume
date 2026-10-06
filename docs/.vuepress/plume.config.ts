@@ -22,18 +22,10 @@ export default defineThemeConfig({
   logo: 'https://api.iconify.design/token:rtm.svg',
 
   appearance: true,  // 配置 深色模式
-  // 社交链接
   social: [
-    { icon: 'github', link: 'https://github.com/your-username' },
-    { icon: 'twitter', link: 'https://twitter.com/your-username' },
-    { icon: 'linkedin', link: 'https://www.linkedin.com/in/your-username' },
-    { icon: 'instagram', link: 'https://www.instagram.com/your-username' },
-    { icon: 'facebook', link: 'https://www.facebook.com/your-username' },
-    { icon: 'youtube', link: 'https://www.youtube.com/your-username' },
-    { icon: 'telegram', link: 'https://t.me/your-username' },
-    { icon: 'discord', link: 'https://discord.gg/your-username' },
+    { icon: 'github', link: 'https://github.com/nicepoem/vuepress-theme-plume' },
   ],
-  // navbarSocialInclude: ['github'], // 允许显示在导航栏的 social 社交链接
+  navbarSocialInclude: ['github'],
   // aside: true, // 页内侧边栏， 默认显示在右侧
   // outline: [2, 3], // 页内大纲， 默认显示 h2, h3
 
