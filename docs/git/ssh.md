@@ -1,3 +1,8 @@
+---
+title: ssh
+createTime: 2026/07/20 23:47:29
+permalink: /git/40gom3pc/
+---
 # ssh
 
 ### 第一步：完成密钥生成（如果当前命令卡住）
