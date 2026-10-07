@@ -43,7 +43,7 @@ echo.
 
 git diff --cached --quiet
 if errorlevel 1 (
-    set /p commit_msg="请输入提交信息 (直接回车使用默认信息): "
+    set /p commit_msg="请输入提交信息，直接回车使用默认信息: "
     if "!commit_msg!"=="" (
         for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-ddTHH:mm:ss"') do set "now=%%i"
         set "commit_msg=更新代码 !now!"
@@ -67,7 +67,7 @@ git push origin %branch%
 if errorlevel 1 (
     echo [错误] 推送失败！
     echo 请检查:
-    echo 1. 是否设置了远程仓库 (git remote -v)
+    echo 1. 是否设置了远程仓库，可运行: git remote -v
     echo 2. 是否有推送权限
     echo 3. 网络连接是否正常
     pause
