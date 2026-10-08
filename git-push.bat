@@ -1,57 +1,99 @@
 ```bat
 @echo off
 chcp 65001 >nul
-setlocal EnableDelayedExpansion
+setlocal EnableExtensions EnableDelayedExpansion
 
 :: ============================================================
-:: Git 一键推送脚本
+:: Git 一键发布工具
+:: ------------------------------------------------------------
 :: 功能：
-:: 1. 自动进入脚本所在目录
-:: 2. 检查 Git 仓库
-:: 3. 检查当前分支
-:: 4. 检查远程仓库
-:: 5. 自动 git add
-:: 6. 有修改才提交
-:: 7. 自动生成默认提交信息
-:: 8. 推送失败自动重试
-:: 9. 区分 SSH / HTTPS 网络错误
-:: 10. 防止重复提交
+::   1. 自动进入脚本目录
+::   2. 检查 Git 环境
+::   3. 检查 Git 仓库
+::   4. 检查当前分支
+::   5. 检查远程仓库
+::   6. 检查工作区
+::   7. 自动 git add
+::   8. 自动 commit
+::   9. 检查远程是否领先
+::  10. 必要时自动 pull --rebase
+::  11. push 自动重试
+::  12. 检测 GitHub SSH 连接
+::  13. push 失败给出详细诊断
+::  14. 防止重复 commit
+::  15. 保证本地 commit 不因网络问题丢失
 :: ============================================================
 
-title Git 一键推送
 
-:: ------------------------------------------------------------
+:: ============================================================
+:: 基础配置
+:: ============================================================
+
+set "SCRIPT_VERSION=2.0.0"
+set "MAX_PUSH_RETRY=3"
+set "RETRY_WAIT=3"
+
 :: 进入脚本所在目录
-:: ------------------------------------------------------------
 cd /d "%~dp0"
 
+
+:: ============================================================
+:: 标题
+:: ============================================================
+
+title Git 一键发布 v%SCRIPT_VERSION%
+
+cls
+
 echo.
-echo ========================================
-echo          Git 一键推送脚本
-echo ========================================
+echo ============================================================
+echo                    Git 一键发布工具
+echo ============================================================
+echo.
+echo  Version : %SCRIPT_VERSION%
+echo  Path    : %cd%
+echo.
+echo ============================================================
 echo.
 
-:: ------------------------------------------------------------
-:: 检查 Git 是否安装
-:: ------------------------------------------------------------
+
+:: ============================================================
+:: [1] 检查 Git
+:: ============================================================
+
+echo [1/10] 检查 Git 环境...
+echo.
+
 where git >nul 2>&1
 
 if errorlevel 1 (
-    echo [错误] 未检测到 Git！
+    echo [错误] 未检测到 Git。
     echo.
-    echo 请先安装 Git，然后重新运行此脚本。
+    echo 请先安装 Git：
+    echo https://git-scm.com/
     echo.
-    pause
-    exit /b 1
+    goto FAILED
 )
 
-:: ------------------------------------------------------------
-:: 检查当前目录是否为 Git 仓库
-:: ------------------------------------------------------------
+for /f "delims=" %%i in ('git --version') do (
+    set "GIT_VERSION=%%i"
+)
+
+echo [完成] !GIT_VERSION!
+echo.
+
+
+:: ============================================================
+:: [2] 检查 Git 仓库
+:: ============================================================
+
+echo [2/10] 检查 Git 仓库...
+echo.
+
 git rev-parse --is-inside-work-tree >nul 2>&1
 
 if errorlevel 1 (
-    echo [错误] 当前目录不是 Git 仓库！
+    echo [错误] 当前目录不是 Git 仓库。
     echo.
     echo 当前目录：
     echo %cd%
@@ -60,294 +102,514 @@ if errorlevel 1 (
     echo.
     echo     git init
     echo.
-    pause
-    exit /b 1
+    goto FAILED
 )
 
-:: ------------------------------------------------------------
-:: 获取当前分支
-:: ------------------------------------------------------------
+echo [完成] 当前目录是 Git 仓库。
+echo.
+
+
+:: ============================================================
+:: [3] 获取当前分支
+:: ============================================================
+
+echo [3/10] 检查当前分支...
+echo.
+
+set "BRANCH="
+
 for /f "delims=" %%i in ('git branch --show-current') do (
-    set "branch=%%i"
+    set "BRANCH=%%i"
 )
 
-if "!branch!"=="" (
+if "!BRANCH!"=="" (
     echo [错误] 无法获取当前分支。
     echo.
     echo 当前可能处于 detached HEAD 状态。
     echo.
-    pause
-    exit /b 1
+    echo 请先切换到正常分支，例如：
+    echo.
+    echo     git switch main
+    echo.
+    goto FAILED
 )
 
-echo [信息] 当前目录: %cd%
-echo [信息] 当前分支: !branch!
+echo [完成] 当前分支：!BRANCH!
 echo.
 
-:: ------------------------------------------------------------
-:: 获取远程仓库
-:: ------------------------------------------------------------
+
+:: ============================================================
+:: [4] 检查远程仓库
+:: ============================================================
+
+echo [4/10] 检查远程仓库...
+echo.
+
+set "REMOTE_URL="
+
 for /f "delims=" %%i in ('git remote get-url origin 2^>nul') do (
-    set "remote_url=%%i"
+    set "REMOTE_URL=%%i"
 )
 
-if "!remote_url!"=="" (
-    echo [错误] 未配置 origin 远程仓库！
+if "!REMOTE_URL!"=="" (
+    echo [错误] 未配置 origin 远程仓库。
     echo.
-    echo 可以执行：
+    echo 当前远程仓库：
+    git remote -v
+    echo.
+    echo 可以使用：
     echo.
     echo     git remote add origin 仓库地址
     echo.
-    echo 查看当前远程仓库：
-    echo.
-    echo     git remote -v
-    echo.
-    pause
-    exit /b 1
+    goto FAILED
 )
 
-echo [信息] 远程仓库: !remote_url!
+echo [完成] origin
+echo.
+echo       !REMOTE_URL!
 echo.
 
-:: ------------------------------------------------------------
-:: 显示当前状态
-:: ------------------------------------------------------------
-echo ========================================
-echo [1/4] 检查文件状态
-echo ========================================
+
+:: ============================================================
+:: [5] 检查工作区
+:: ============================================================
+
+echo [5/10] 检查工作区...
 echo.
 
-git status --short
+set "HAS_CHANGE=0"
 
-if errorlevel 1 (
-    echo.
-    echo [错误] 无法获取 Git 状态。
-    pause
-    exit /b 1
+git status --porcelain > "%TEMP%\git_publish_status.txt"
+
+for %%A in ("%TEMP%\git_publish_status.txt") do (
+    if %%~zA GTR 0 set "HAS_CHANGE=1"
 )
 
-echo.
+if "!HAS_CHANGE!"=="1" (
 
-:: ------------------------------------------------------------
-:: 添加所有文件
-:: ------------------------------------------------------------
-echo ========================================
-echo [2/4] 添加文件到暂存区
-echo ========================================
-echo.
-
-git add -A
-
-if errorlevel 1 (
-    echo.
-    echo [错误] git add 执行失败！
-    pause
-    exit /b 1
-)
-
-echo [完成] 文件已添加到暂存区
-echo.
-
-:: ------------------------------------------------------------
-:: 判断是否存在需要提交的内容
-:: ------------------------------------------------------------
-git diff --cached --quiet
-
-if errorlevel 1 (
-
-    echo ========================================
-    echo [3/4] 提交更改
-    echo ========================================
+    echo [信息] 检测到文件变化：
     echo.
 
-    set "commit_msg="
-
-    set /p "commit_msg=请输入提交信息，直接回车使用默认信息: "
-
-    if "!commit_msg!"=="" (
-        for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-ddTHH\:mm\:ss"') do (
-            set "now=%%i"
-        )
-
-        set "commit_msg=更新代码 !now!"
-    )
+    type "%TEMP%\git_publish_status.txt"
 
     echo.
-    echo [信息] 提交信息：
-    echo !commit_msg!
-    echo.
-
-    git commit -m "!commit_msg!"
-
-    if errorlevel 1 (
-        echo.
-        echo [错误] Git commit 失败！
-        echo.
-        pause
-        exit /b 1
-    )
-
-    echo.
-    echo [完成] 提交成功！
 
 ) else (
 
-    echo ========================================
-    echo [3/4] 提交更改
-    echo ========================================
+    echo [完成] 工作区没有新的文件修改。
+)
+
+del "%TEMP%\git_publish_status.txt" >nul 2>&1
+
+echo.
+
+
+:: ============================================================
+:: [6] 添加并提交
+:: ============================================================
+
+echo [6/10] 处理本地提交...
+echo.
+
+if "!HAS_CHANGE!"=="1" (
+
+    echo 正在添加文件...
+    git add -A
+
+    if errorlevel 1 (
+        echo.
+        echo [错误] git add 失败。
+        goto FAILED
+    )
+
+    echo [完成] 文件已添加到暂存区。
     echo.
 
-    echo [信息] 没有新的文件修改，跳过提交。
+    :: 检查暂存区
+    git diff --cached --quiet
+
+    if errorlevel 1 (
+
+        echo ----------------------------------------
+        echo 创建 Git Commit
+        echo ----------------------------------------
+        echo.
+
+        set "COMMIT_MSG="
+
+        set /p "COMMIT_MSG=请输入提交信息，直接回车使用默认信息: "
+
+        if "!COMMIT_MSG!"=="" (
+
+            for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-ddTHH\:mm\:ss"') do (
+                set "NOW=%%i"
+            )
+
+            set "COMMIT_MSG=更新代码 !NOW!"
+        )
+
+        echo.
+        echo [信息] Commit：
+        echo !COMMIT_MSG!
+        echo.
+
+        git commit -m "!COMMIT_MSG!"
+
+        if errorlevel 1 (
+            echo.
+            echo [错误] Commit 创建失败。
+            goto FAILED
+        )
+
+        echo.
+        echo [完成] Commit 创建成功。
+
+    ) else (
+
+        echo [信息] 暂存区没有实际变化，跳过 Commit。
+    )
+
+) else (
+
+    echo [信息] 没有新的文件需要提交。
 )
 
 echo.
 
-:: ------------------------------------------------------------
+
+:: ============================================================
 :: 显示最新 Commit
-:: ------------------------------------------------------------
-echo [信息] 当前最新提交：
+:: ============================================================
+
+echo ----------------------------------------
+echo 当前最新 Commit
+echo ----------------------------------------
+echo.
 
 git log -1 --oneline
 
 echo.
 
-:: ------------------------------------------------------------
-:: 推送
-:: ------------------------------------------------------------
-echo ========================================
-echo [4/4] 推送到远程仓库
-echo ========================================
+
+:: ============================================================
+:: [7] 获取远程信息
+:: ============================================================
+
+echo [7/10] 检查远程仓库状态...
 echo.
 
-echo [信息] 正在推送到 origin/!branch! ...
-echo.
+echo 正在获取远程最新信息...
 
-git push origin "!branch!"
+git fetch origin
 
-if not errorlevel 1 (
-    goto PUSH_SUCCESS
+if errorlevel 1 (
+
+    echo.
+    echo [警告] git fetch 失败。
+    echo.
+    echo 这通常是网络连接问题。
+    echo.
+    echo 由于本地 Commit 已经存在，
+    echo 不会删除或回滚你的代码。
+    echo.
+    echo 后续仍然可以直接 push。
+    echo.
+
+) else (
+
+    echo [完成] 远程信息获取成功。
 )
 
-:: ------------------------------------------------------------
-:: 第一次推送失败
-:: ------------------------------------------------------------
 echo.
-echo [警告] 第一次推送失败！
+
+
+:: ============================================================
+:: [8] 判断本地 / 远程关系
+:: ============================================================
+
+echo [8/10] 分析本地与远程分支...
+echo.
+
+set "AHEAD=0"
+set "BEHIND=0"
+
+for /f "tokens=1,2" %%a in (
+    'git rev-list --left-right --count origin/!BRANCH!...!BRANCH! 2^>nul'
+) do (
+    set "BEHIND=%%a"
+    set "AHEAD=%%b"
+)
+
+echo [信息] 远程领先：!BEHIND! 个提交
+echo [信息] 本地领先：!AHEAD! 个提交
+echo.
+
+
+:: ============================================================
+:: 如果远程领先，自动 rebase
+:: ============================================================
+
+if "!BEHIND!" GTR "0" (
+
+    echo ----------------------------------------
+    echo 远程仓库存在新的提交
+    echo ----------------------------------------
+    echo.
+
+    echo [操作] 正在执行：
+    echo.
+    echo     git pull --rebase origin !BRANCH!
+    echo.
+
+    git pull --rebase origin "!BRANCH!"
+
+    if errorlevel 1 (
+
+        echo.
+        echo ====================================================
+        echo [错误] 自动 Rebase 失败
+        echo ====================================================
+        echo.
+        echo 可能存在代码冲突。
+        echo.
+        echo 请手动执行：
+        echo.
+        echo     git status
+        echo.
+        echo 解决冲突后：
+        echo.
+        echo     git add .
+        echo     git rebase --continue
+        echo.
+        echo 如果不想继续 Rebase：
+        echo.
+        echo     git rebase --abort
+        echo.
+        goto FAILED
+    )
+
+    echo.
+    echo [完成] 远程代码已 Rebase。
+    echo.
+)
+
+
+:: ============================================================
+:: [9] Push
+:: ============================================================
+
+echo [9/10] 推送到远程仓库...
+echo.
+
+set "PUSH_SUCCESS=0"
+set "PUSH_COUNT=0"
+
+:PUSH_RETRY
+
+set /a PUSH_COUNT+=1
+
+echo ----------------------------------------
+echo Push 第 !PUSH_COUNT! / %MAX_PUSH_RETRY% 次
+echo ----------------------------------------
+echo.
+
+git push origin "!BRANCH!"
+
+if not errorlevel 1 (
+    set "PUSH_SUCCESS=1"
+    goto PUSH_OK
+)
+
+if !PUSH_COUNT! GEQ %MAX_PUSH_RETRY% (
+    goto PUSH_FAILED
+)
+
+echo.
+echo [警告] Push 失败。
+echo.
+echo %RETRY_WAIT% 秒后自动重试...
+echo.
+
+timeout /t %RETRY_WAIT% /nobreak >nul
+
+goto PUSH_RETRY
+
+
+:: ============================================================
+:: Push 成功
+:: ============================================================
+
+:PUSH_OK
+
+echo.
+echo ============================================================
+echo                    发布成功
+echo ============================================================
+echo.
+
+echo [完成] Git Push 成功！
+echo.
+
+echo 项目目录：
+echo     %cd%
+echo.
+
+echo 当前分支：
+echo     !BRANCH!
+echo.
+
+echo 远程仓库：
+echo     !REMOTE_URL!
+echo.
+
+echo 最新 Commit：
+git log -1 --oneline
+
+echo.
+
+echo 发布状态：
+echo     ✓ 工作区检查
+echo     ✓ Commit
+echo     ✓ Remote 同步
+echo     ✓ Push
+echo.
+
+echo ============================================================
+echo                    操作完成
+echo ============================================================
+echo.
+
+pause
+exit /b 0
+
+
+:: ============================================================
+:: Push 失败
+:: ============================================================
+
+:PUSH_FAILED
+
+echo.
+echo ============================================================
+echo                    发布失败
+echo ============================================================
+echo.
+
+echo [错误] Push 连续 %MAX_PUSH_RETRY% 次失败。
 echo.
 
 echo ----------------------------------------
-echo 正在检查网络连接...
+echo 当前状态
 echo ----------------------------------------
 echo.
 
+echo 分支：
+echo     !BRANCH!
+echo.
+
+echo 远程：
+echo     !REMOTE_URL!
+echo.
+
+echo 最新 Commit：
+git log -1 --oneline
+
+echo.
+
 :: ------------------------------------------------------------
-:: 判断是否为 GitHub SSH
+:: GitHub SSH 检测
 :: ------------------------------------------------------------
-echo "!remote_url!" | findstr /i "github.com" >nul
+
+echo ----------------------------------------
+echo GitHub SSH 网络检测
+echo ----------------------------------------
+echo.
+
+echo "!REMOTE_URL!" | findstr /i "github.com" >nul
 
 if not errorlevel 1 (
 
-    echo [检测] 当前远程仓库为 GitHub。
+    echo [检测] 当前远程仓库属于 GitHub。
+    echo.
 
-    echo "!remote_url!" | findstr /i "ssh.github.com" >nul
+    echo "!REMOTE_URL!" | findstr /i "ssh.github.com" >nul
 
     if not errorlevel 1 (
 
-        echo [检测] 当前使用 GitHub SSH 443 端口。
+        echo [检测] 使用 GitHub SSH 443。
         echo.
-        echo 正在测试 SSH 连接：
-        echo ssh.github.com:443
+        echo 正在测试：
+        echo     ssh.github.com:443
         echo.
 
-        ssh -T -p 443 git@ssh.github.com >nul 2>&1
+        ssh -T -p 443 git@ssh.github.com
 
         if errorlevel 1 (
-            echo [错误] GitHub SSH 连接失败！
             echo.
-            echo 可能原因：
+            echo [诊断] GitHub SSH 连接失败。
             echo.
-            echo 1. 当前网络无法连接 ssh.github.com:443
-            echo 2. 防火墙拦截 SSH
-            echo 3. VPN / 代理配置异常
-            echo 4. GitHub 网络连接异常
+            echo 建议切换 HTTPS：
             echo.
-            echo 当前远程仓库：
-            echo !remote_url!
-            echo.
-            echo 推荐切换 GitHub HTTPS。
-            echo.
-            echo 示例：
-            echo git remote set-url origin https://github.com/用户名/仓库.git
+            echo     git remote set-url origin https://github.com/用户名/仓库.git
             echo.
         )
     )
 )
 
 :: ------------------------------------------------------------
-:: 自动重试一次
+:: 判断是否可能是远程领先
 :: ------------------------------------------------------------
+
 echo.
 echo ----------------------------------------
-echo 正在重新尝试推送...
+echo 检查远程状态
 echo ----------------------------------------
 echo.
 
-timeout /t 2 /nobreak >nul
-
-git push origin "!branch!"
+git fetch origin >nul 2>&1
 
 if not errorlevel 1 (
-    goto PUSH_SUCCESS
+
+    set "REMOTE_BEHIND=0"
+    set "REMOTE_AHEAD=0"
+
+    for /f "tokens=1,2" %%a in (
+        'git rev-list --left-right --count origin/!BRANCH!...!BRANCH! 2^>nul'
+    ) do (
+        set "REMOTE_BEHIND=%%a"
+        set "REMOTE_AHEAD=%%b"
+    )
+
+    echo 远程领先：!REMOTE_BEHIND!
+    echo 本地领先：!REMOTE_AHEAD!
+
+    if "!REMOTE_BEHIND!" GTR "0" (
+        echo.
+        echo [提示] 远程存在新的提交。
+        echo.
+        echo 建议执行：
+        echo.
+        echo     git pull --rebase origin !BRANCH!
+        echo.
+    )
 )
 
-:: ------------------------------------------------------------
-:: 推送最终失败
-:: ------------------------------------------------------------
 echo.
-echo ========================================
-echo [错误] 推送失败！
-echo ========================================
+echo ============================================================
+echo                     重要提示
+echo ============================================================
 echo.
 
-echo 当前分支：
-echo     !branch!
+echo 本地 Commit 已经保存。
+echo.
+echo 即使 Push 失败，你的代码也不会因为本脚本而丢失。
+echo.
+echo 网络恢复后可以直接执行：
+echo.
+echo     git push origin !BRANCH!
 echo.
 
-echo 远程仓库：
-echo     !remote_url!
-echo.
-
-echo 当前最新 Commit：
-git log -1 --oneline
-
-echo.
-echo ----------------------------------------
-echo 排查建议
-echo ----------------------------------------
-echo.
-
-echo [1] 查看远程仓库：
-echo     git remote -v
-echo.
-
-echo [2] 测试 GitHub SSH：
-echo     ssh -T -p 443 git@ssh.github.com
-echo.
-
-echo [3] 查看 Git 状态：
-echo     git status
-echo.
-
-echo [4] 如果 SSH 无法连接，可以切换 HTTPS：
-echo     git remote set-url origin https://github.com/用户名/仓库.git
-echo.
-
-echo [5] 网络恢复后，无需重新 commit，直接执行：
-echo     git push origin !branch!
-echo.
-
-echo.
-echo [重要] 本次提交已经保存在本地，不会丢失！
+echo ============================================================
 echo.
 
 pause
@@ -355,36 +617,30 @@ exit /b 1
 
 
 :: ============================================================
-:: 推送成功
+:: 通用失败
 :: ============================================================
-:PUSH_SUCCESS
+
+:FAILED
 
 echo.
-echo ========================================
-echo        Git 推送成功
-echo ========================================
+echo ============================================================
+echo                    操作失败
+echo ============================================================
 echo.
 
-echo [完成] 已成功推送到远程仓库！
+echo [提示] 脚本没有删除你的代码。
+echo [提示] 已经创建的 Commit 仍然保存在本地。
 echo.
 
-echo 分支：
-echo     !branch!
+echo 当前 Git 状态：
 echo.
 
-echo 远程：
-echo     !remote_url!
-echo.
-
-echo 最新提交：
-git log -1 --oneline
+git status
 
 echo.
-echo ========================================
-echo             操作完成
-echo ========================================
+echo ============================================================
 echo.
 
 pause
-exit /b 0
+exit /b 1
 ```
